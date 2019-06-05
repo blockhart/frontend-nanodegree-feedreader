@@ -1,6 +1,8 @@
-# Project Overview
+# How to Run the Application
 
 This application loads blogs related to Udacity. The name and source for each blog and its entries is set in the app.js variable "allFeeds."
+
+To run this application, load index.html into your browser.
 
 
 ## Choosing the blog to display
