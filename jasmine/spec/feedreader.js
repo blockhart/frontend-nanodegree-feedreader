@@ -76,22 +76,22 @@ $(function() {
          * should have two expectations: does the menu display when
          * clicked and does it hide when clicked again.
          */
-        it('displays when clicked and hides when clicked again', function() {
+        it('and displays when clicked and hides when clicked again', function(done) {
             // Click first time to bring onscreen
-            menuIcon.click();
+            menuIcon.click(); 
             expect($('body').hasClass('menu-hidden')).toBe(false);
-            // Need time to let the transforms complete before checking moved state       
-            setTimeout(function() {
+            // Because of the css transformation timing, need a delay
+            // that isn't reliant upon a function call-back    
+            var firstTimer = setTimeout(function() {
                 expect(slideMenu.getBoundingClientRect().x).toBe(onscreenXPosition);
-                // Click second time to move offscreen
                 menuIcon.click();
-            },300);
-
-            // Need time to let the transforms complete before checking moved state
-            setTimeout(function() {
                 expect($('body').hasClass('menu-hidden')).toBe(true)
-                expect(slideMenu.getBoundingClientRect().x).toBe(offscreenXPosition);
-            },600); 
+                // Need another timing delay after second menu click.               
+                var insideTimer = setTimeout(function() {
+                    expect(slideMenu.getBoundingClientRect().x).toBe(offscreenXPosition);
+                    done();
+                },300);                
+            },300);
         });
     });
 
@@ -123,25 +123,27 @@ $(function() {
          * by the loadFeed function that the content actually changes.
          * Remember, loadFeed() is asynchronous.
          */
-        var container = $('.feed'),
-            firstContainer = container;
+        var firstContainer, secondContainer = $('.feed');
 
-        beforeEach(function(done) {
-            container.empty();
-            loadFeed(0);
-            firstContainer = $('.feed');
-            loadFeed(1,done);
+        beforeEach(function (done) {
+            loadFeed(0, function() {
+                firstContainer = $('.feed').html();
+                done();
+            });
+            loadFeed(1, function() {
+                secondContainer = $('.feed').html();
+                done();
+            });
         });
 
-        afterEach(function(done) {
-            loadFeed(0,done);
+        afterAll(function(done){
+            loadFeed(0, function() {
+                done();
+            });
         });
 
-        it('changes content on the page', function(done) {
-            var secondContainer = $('.feed');
+        it('changes content on the page', function() {
             expect(firstContainer).not.toBe(secondContainer);
-            done();
         });
-
     }); 
 }());
