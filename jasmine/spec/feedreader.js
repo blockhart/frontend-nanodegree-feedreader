@@ -45,9 +45,9 @@ $(function() {
          */
         it('has feeds each with names that are defined and not empty', function() {
             allFeeds.forEach(function(feedItem) {
-                var urlTest = feedItem.url;
-                expect(urlTest).toBeDefined();
-                expect(urlTest).not.toBe('');
+                var urlName = feedItem.name;
+                expect(urlName).toBeDefined();
+                expect(urlName).not.toBe('');
             });
         });
     });
@@ -125,15 +125,18 @@ $(function() {
          */
         var firstContainer, secondContainer = $('.feed');
 
+        /* Second loadFeed is part of the callback for the first, and 
+         * the second one returns the "done()" that will have jasmine
+         * 'wait' for both to be completed before running the it tests. */
         beforeEach(function (done) {
             loadFeed(0, function() {
                 firstContainer = $('.feed').html();
-                done();
+                loadFeed(1, function() {
+                    secondContainer = $('.feed').html();
+                    done();
+                });
             });
-            loadFeed(1, function() {
-                secondContainer = $('.feed').html();
-                done();
-            });
+            
         });
 
         afterAll(function(done){
